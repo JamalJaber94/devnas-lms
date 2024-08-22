@@ -1,24 +1,43 @@
+import 'reflect-metadata';
 import express from 'express';
+import { useExpressServer, useContainer } from 'routing-controllers';
+import { Container } from 'typedi';
+import swaggerUi from 'swagger-ui-express';
 import { initializeDatabase } from './config/database';
-import { getRepository } from 'typeorm';
-import { CourseEntity } from './infrastructure/database/entities/CourseEntity';
-import { CourseRepository } from './infrastructure/repositories/CourseRepository';
-import { CourseService } from './application/services/CourseService';
 import { CourseController } from './presentation/controllers/CourseController';
+import { setupDependencyInjection } from './config/dependencyInjection';
+import { generateSwaggerSpec } from './config/swagger';
+import dotenv from 'dotenv';
 
-const app = express();
-app.use(express.json());
+dotenv.config();
 
-initializeDatabase().then(() => {
-  const courseRepository = new CourseRepository(getRepository(CourseEntity));
-  const courseService = new CourseService(courseRepository);
-  const courseController = new CourseController(courseService);
+async function bootstrap() {
+  const app = express();
+  app.use(express.json());
 
-  app.post('/courses', courseController.createCourse.bind(courseController));
-  app.get('/courses', courseController.getCourseList.bind(courseController));
+  await initializeDatabase();
+
+  // Set up dependency injection
+  useContainer(Container);
+  setupDependencyInjection();
+
+  // Set up routing-controllers
+  useExpressServer(app, {
+    controllers: [CourseController],
+    validation: true,
+  });
+
+  // Generate OpenAPI spec
+  const spec = generateSwaggerSpec();
+
+  // Serve Swagger UI
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(spec));
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
   });
-});
+}
+
+bootstrap().catch(console.error);
