@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { LessonEntity } from './LessonEntity';
 
 @Entity('courses')
 export class CourseEntity {
@@ -10,4 +11,7 @@ export class CourseEntity {
 
   @Column()
   description: string;
+
+  @OneToMany(() => LessonEntity, lesson => lesson.course)
+  lessons: LessonEntity[];
 }

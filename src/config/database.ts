@@ -1,6 +1,7 @@
 import { createConnection } from 'typeorm';
 import { CourseEntity } from '../infrastructure/database/entities/CourseEntity';
 import dotenv from 'dotenv';
+import { LessonEntity } from '../infrastructure/database/entities/LessonEntity';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ export const initializeDatabase = async () => {
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [CourseEntity],
+      entities: [CourseEntity,LessonEntity],
       synchronize: true,
     });
     console.log('Database connected successfully');

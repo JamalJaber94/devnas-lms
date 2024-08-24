@@ -1,4 +1,5 @@
 import { Course } from '../entities/Course';
+import { Lesson } from '../entities/Lesson';
 import { ICourseRepository } from '../repositories/ICourseRepository';
 
 
@@ -34,5 +35,10 @@ export class CourseManager{
     if (!description || description.trim().length === 0) {
       throw new Error('Title cannot be empty');
     }
+  }
+  async addLesson(courseId:number,title : string, content:string) : Promise<Lesson>{
+    const lesson = new Lesson(0,title,content,courseId);
+    console.log(lesson)
+    return this.courseRepository.addLesson(lesson);
   }
 }
