@@ -1,9 +1,7 @@
 import { JsonController, Get, Post, Body } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Service } from 'typedi';
-//import { ICourseService } from '../../domain/services/ICourseService';
 import { CourseService } from '../../application/services/CourseService';
-import { Course } from '../../domain/entities/Course';
 import { CreateCourseDto, CourseDto } from '../dtos/CourseDto';
 
 @JsonController('/courses')
@@ -15,8 +13,7 @@ export class CourseController {
   @OpenAPI({ summary: 'Create a new course' })
   @ResponseSchema(CourseDto)
   async createCourse(@Body() courseData: CreateCourseDto): Promise<CourseDto> {
-    const course = new Course(0, courseData.title, courseData.description);
-    const createdCourse = await this.courseService.createCourse(course);
+    const createdCourse = await this.courseService.createCourse(courseData.title,courseData.description);
     return { id: createdCourse.id, title: createdCourse.title, description: createdCourse.description };
   }
 

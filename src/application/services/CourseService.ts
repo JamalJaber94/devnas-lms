@@ -1,15 +1,17 @@
-import { ICourseService } from '../../domain/services/ICourseService';
+import { CourseManager } from '../../domain/services/CourseManager';
 import { ICourseRepository } from '../../domain/repositories/ICourseRepository';
-import { Course } from '../../domain/entities/Course';
+import { CourseDto } from '../../presentation/dtos/CourseDto';
 
-export class CourseService implements ICourseService {
-  constructor(private readonly courseRepository: ICourseRepository) {}
+export class CourseService {
+  constructor(private readonly courseRepository: ICourseRepository,
+    private readonly courseManager: CourseManager
+  ) {}
 
-  async createCourse(course: Course): Promise<Course> {
-    return this.courseRepository.create(course);
+  async createCourse(title: string,description: string): Promise<CourseDto> {
+    return this.courseManager.createCourse(title,description);
   }
 
-  async getAllCourses(): Promise<Course[]> {
+  async getAllCourses(): Promise<CourseDto[]> {
     return this.courseRepository.findAll();
   }
 }
